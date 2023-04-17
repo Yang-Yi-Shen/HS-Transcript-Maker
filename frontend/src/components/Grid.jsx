@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
 
 function Grid() {
   const [gridData, setGridData] = useState([]);
@@ -11,6 +11,14 @@ function Grid() {
   const addColumn = () => {
     const newColumn = gridData.length > 0 ? gridData.map(row => [...row, "newGrid"]) : [["newGrid"]];
     setGridData(newColumn);
+  }
+
+  const removeRow = () => {
+    setGridData(gridData.slice(0, -1));
+  }
+
+  const removeColumn = () => {
+    setGridData(gridData.map(row => row.slice(0, -1)));
   }
 
   return (
@@ -28,8 +36,10 @@ function Grid() {
           </tbody>
         </table>
         <button onClick={addColumn}>Add Column</button>
+        <button onClick={removeColumn}>Remove Column</button>
       </div>
       <button onClick={addRow}>Add Row</button>
+      <button onClick={removeRow}>Remove Row</button>
     </div>
   );
 }
