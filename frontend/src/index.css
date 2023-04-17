@@ -7,3 +7,20 @@ header {
     display: flex;
     gap: 20px;
 }
+
+.grid-container {
+    display: flex;
+    align-items: center; /* added */
+}
+
+.grid {
+    border-spacing: 0px;
+    border-collapse: collapse;
+    width: max-content; /* added */
+    margin-right: 20px; /* added */
+}
+
+.cell {
+    border: 1px solid black;
+    padding: 10px;
+}
