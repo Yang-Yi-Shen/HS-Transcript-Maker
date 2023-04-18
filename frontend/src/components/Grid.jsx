@@ -1,19 +1,21 @@
 import React, { useState, useRef } from 'react';
 
 function Grid() {
-  const [gridData, setGridData] = useState([['Calculus BC', 'A+']]);
   const [headers, setHeaders] = useState(['Course', 'Grade']);
   const [newHeader, setNewHeader] = useState('');
+  const [gridData, setGridData] = useState([['AP Calculus', 'A+']]);
   const columnInputRef = useRef(null);
 
   const addRow = () => {
-    const newRow = gridData.length > 0 ? Array.from({ length: gridData[0].length }, () => "newGrid") : ["newGrid"];
-    setGridData([...gridData, newRow]);
-  }
+    if (headers.length > 0) {
+      const newRow = headers.length > 0 ? Array.from({ length: headers.length }, () => "") : [""];
+      setGridData([...gridData, newRow]);
+    }
+  };
 
   const addColumn = () => {
     const newColumnName = columnInputRef.current.value || "New Column";
-    const newColumnData = gridData.length > 0 ? gridData.map(row => [...row, "newGrid"]) : [["newGrid"]];
+    const newColumnData = gridData.length > 0 ? gridData.map(row => [...row, ""]) : [[]];
     const newHeaders = [...headers, newColumnName];
     setHeaders(newHeaders);
     setGridData(newColumnData);
@@ -23,18 +25,24 @@ function Grid() {
     if (gridData.length > 1) {
       setGridData(prevGridData => prevGridData.slice(0, -1));
     }
-  }
+  };
 
   const removeColumn = () => {
-    if (gridData.length > 0 && gridData[0].length > 1) {
-      setHeaders(prevHeaders => prevHeaders.slice(0, -1));
-      setGridData(prevGridData => prevGridData.map(row => row.slice(0, -1)));
-    }
-  }
+    setHeaders(prevHeaders => prevHeaders.slice(0, -1));
+    setGridData(prevGridData => prevGridData.map(row => row.slice(0, -1)));
+  };
 
   const handleNewHeaderChange = (event) => {
     setNewHeader(event.target.value);
-  }
+  };
+
+  const handleCellChange = (event, rowIndex, columnIndex) => {
+    const updatedRow = [...gridData[rowIndex]];
+    updatedRow[columnIndex] = event.target.value;
+    const updatedGridData = [...gridData];
+    updatedGridData[rowIndex] = updatedRow;
+    setGridData(updatedGridData);
+  };
 
   return (
     <div>
@@ -42,9 +50,9 @@ function Grid() {
         <table className='grid'>
           <thead>
             <tr>
-              {gridData.length > 0 && gridData[0].map((_, columnIndex) => (
+              {headers.map((header, columnIndex) => (
                 <th key={columnIndex}>
-                  {headers[columnIndex]}
+                  {header}
                 </th>
               ))}
             </tr>
@@ -53,7 +61,9 @@ function Grid() {
             {gridData.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {row.map((cell, columnIndex) => (
-                  <td key={`${rowIndex}-${columnIndex}`} className="cell">{cell}</td>
+                  <td key={`${rowIndex}-${columnIndex}`} className="cell">
+                    <input type="text" className='cell-content' value={cell} onChange={(event) => handleCellChange(event, rowIndex, columnIndex)} />
+                  </td>
                 ))}
               </tr>
             ))}
