@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 
 function Grid() {
-  const [gridData, setGridData] = useState([]);
-  const [columnHeaders, setColumnHeaders] = useState([]);
-  const [newColumnHeader, setNewColumnHeader] = useState('');
+  const [gridData, setGridData] = useState([['Calculus BC', 'A+']]);
+  const [headers, setHeaders] = useState(['Course', 'Grade']);
+  const [newHeader, setNewHeader] = useState('');
   const columnInputRef = useRef(null);
 
   const addRow = () => {
@@ -14,8 +14,8 @@ function Grid() {
   const addColumn = () => {
     const newColumnName = columnInputRef.current.value || "New Column";
     const newColumnData = gridData.length > 0 ? gridData.map(row => [...row, "newGrid"]) : [["newGrid"]];
-    const newColumnHeaders = [...columnHeaders, newColumnName];
-    setColumnHeaders(newColumnHeaders);
+    const newHeaders = [...headers, newColumnName];
+    setHeaders(newHeaders);
     setGridData(newColumnData);
   };  
 
@@ -27,13 +27,13 @@ function Grid() {
 
   const removeColumn = () => {
     if (gridData.length > 0 && gridData[0].length > 1) {
-      setColumnHeaders(prevHeaders => prevHeaders.slice(0, -1));
+      setHeaders(prevHeaders => prevHeaders.slice(0, -1));
       setGridData(prevGridData => prevGridData.map(row => row.slice(0, -1)));
     }
   }
 
-  const handleNewColumnHeaderChange = (event) => {
-    setNewColumnHeader(event.target.value);
+  const handleNewHeaderChange = (event) => {
+    setNewHeader(event.target.value);
   }
 
   return (
@@ -44,14 +44,7 @@ function Grid() {
             <tr>
               {gridData.length > 0 && gridData[0].map((_, columnIndex) => (
                 <th key={columnIndex}>
-                  {columnIndex === gridData[0].length - 1 ?
-                    <>
-                      <input ref={columnInputRef} value={newColumnHeader} onChange={handleNewColumnHeaderChange} />
-                      <button onClick={addColumn}>Add Column</button>
-                    </>
-                    :
-                    columnHeaders[columnIndex]
-                  }
+                  {headers[columnIndex]}
                 </th>
               ))}
             </tr>
@@ -66,6 +59,8 @@ function Grid() {
             ))}
           </tbody>
         </table>
+        <input ref={columnInputRef} value={newHeader} onChange={handleNewHeaderChange} />
+        <button onClick={addColumn}>Add Column</button>
         <button onClick={removeColumn}>Remove Column</button>
       </div>
       <div className="grid-container">
