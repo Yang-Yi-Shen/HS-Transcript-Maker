@@ -2,46 +2,63 @@ import React, { useState, useRef } from 'react';
 
 function Grid() {
   const [headers, setHeaders] = useState(['Course', 'Grade']);
-  const [newHeader, setNewHeader] = useState('');
-  const [gridData, setGridData] = useState([['AP Calculus', 'A+']]);
+  const [data, setData] = useState([['AP Calculus', 'A+']]);
   const columnInputRef = useRef(null);
 
   const addRow = () => {
-    if (headers.length > 0) {
-      const newRow = headers.length > 0 ? Array.from({ length: headers.length }, () => "") : [""];
-      setGridData([...gridData, newRow]);
-    }
+    const newRow = headers.length > 0 ? Array.from({ length: headers.length }, () => "") : [""];
+    setData([...data, newRow]);
   };
 
   const addColumn = () => {
     const newColumnName = columnInputRef.current.value || "New Column";
-    const newColumnData = gridData.length > 0 ? gridData.map(row => [...row, ""]) : [[]];
+    const newColumnData = data.length > 0 ? data.map(row => [...row, ""]) : [[]];
     const newHeaders = [...headers, newColumnName];
     setHeaders(newHeaders);
-    setGridData(newColumnData);
+    setData(newColumnData);
   };  
 
   const removeRow = () => {
-    if (gridData.length > 1) {
-      setGridData(prevGridData => prevGridData.slice(0, -1));
+    //make sure there's at least 1 row
+    if (data.length > 1) {
+      setData(prevData => prevData.slice(0, -1));
     }
   };
 
   const removeColumn = () => {
-    setHeaders(prevHeaders => prevHeaders.slice(0, -1));
-    setGridData(prevGridData => prevGridData.map(row => row.slice(0, -1)));
-  };
-
-  const handleNewHeaderChange = (event) => {
-    setNewHeader(event.target.value);
+    //make sure there's at least 1 column
+    if (headers.length > 1) {
+      setHeaders(prevHeaders => prevHeaders.slice(0, -1));
+      setData(prevData => prevData.map(row => row.slice(0, -1)));
+    }
   };
 
   const handleCellChange = (event, rowIndex, columnIndex) => {
-    const updatedRow = [...gridData[rowIndex]];
+    const updatedRow = [...data[rowIndex]];
     updatedRow[columnIndex] = event.target.value;
-    const updatedGridData = [...gridData];
-    updatedGridData[rowIndex] = updatedRow;
-    setGridData(updatedGridData);
+    const updatedData = [...data];
+    updatedData[rowIndex] = updatedRow;
+    setData(updatedData);
+  };
+
+  function displayRow(row, rowIndex) {
+    return (
+      <tr key={rowIndex}>
+        {row.map((cell, columnIndex) => (
+          <td key={`${rowIndex}-${columnIndex}`} className="cell">
+            <input type="text" className='cell-content' value={cell} onChange={(event) => handleCellChange(event, rowIndex, columnIndex)} />
+          </td>
+        ))}
+      </tr>
+    );
+  };
+
+  function displayHeaders(header, columnIndex) {
+    return (
+      <th key={columnIndex}>
+        {header}
+      </th>
+    );
   };
 
   return (
@@ -50,26 +67,14 @@ function Grid() {
         <table className='grid'>
           <thead>
             <tr>
-              {headers.map((header, columnIndex) => (
-                <th key={columnIndex}>
-                  {header}
-                </th>
-              ))}
+              {headers.map((header, columnIndex) => displayHeaders(header, columnIndex))}
             </tr>
           </thead>
           <tbody>
-            {gridData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((cell, columnIndex) => (
-                  <td key={`${rowIndex}-${columnIndex}`} className="cell">
-                    <input type="text" className='cell-content' value={cell} onChange={(event) => handleCellChange(event, rowIndex, columnIndex)} />
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {data.map((row, rowIndex) => displayRow(row, rowIndex))}
           </tbody>
         </table>
-        <input ref={columnInputRef} value={newHeader} onChange={handleNewHeaderChange} />
+        <input ref={columnInputRef} />
         <button onClick={addColumn}>Add Column</button>
         <button onClick={removeColumn}>Remove Column</button>
       </div>
